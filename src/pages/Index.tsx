@@ -3,6 +3,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { DollarSign, Truck, Handshake, MessageCircle } from "lucide-react";
 import QuizForm from "@/components/QuizForm";
 import heroImg from "@/assets/hero-warehouse.jpg";
+import image1 from "@/assets/1.png";
+import image2 from "@/assets/2.png";
+import image3 from "@/assets/3.png";
+import image4 from "@/assets/4.png";
+import solutionImageSrc from "@/assets/funcionaria.png";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -71,10 +76,10 @@ const Hero = () => (
 
 /* ── DOBRA 2 — CARROSSEL DE IMAGENS ───────────────── */
 const socialProofImages = [
-  "/src/assets/1.png",
-  "/src/assets/2.png",
-  "/src/assets/3.png",
-  "/src/assets/4.png",
+  image1,
+  image2,
+  image3,
+  image4,
 ];
 
 const SocialProof = () => {
@@ -90,7 +95,7 @@ const SocialProof = () => {
 
   return (
     <Section className="bg-section-alt">
-      <SectionTitle sub="Substitua as 4 imagens na pasta public para usar as fotos que você quiser.">
+      <SectionTitle sub="Substitua as 4 imagens em src/assets para usar as fotos que você quiser.">
         Empresas do Maranhão e Piauí já compram direto da distribuidora
       </SectionTitle>
 
@@ -175,7 +180,7 @@ const BeliefBreak = () => (
 );
 
 /* ── DOBRA 4 — SOLUÇÃO ────────────────────────────── */
-const solutionImage = "/src/assets/funcionaria.png";
+const solutionImage = solutionImageSrc;
 
 const solutionBullets = [
   {
