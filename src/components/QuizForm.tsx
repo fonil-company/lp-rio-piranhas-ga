@@ -127,22 +127,18 @@ const QuizForm = ({ origem }: QuizFormProps) => {
     };
 
     try {
-      const res = await fetch(APPS_SCRIPT_URL, {
+      await fetch(APPS_SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify(payload),
-        redirect: "follow",
+        mode: "no-cors",
       });
-      const data = await res.json();
-      if (data.status === "erro" && data.mensagem !== "Documento já cadastrado") {
-        setSubmitError(data.mensagem || "Erro ao enviar. Tente novamente.");
-        return;
-      }
     } catch {
-      // CORS/redirect opaque response — request was sent successfully
-    } finally {
+      setSubmitError("Falha na conexão. Tente novamente.");
       setIsSubmitting(false);
+      return;
     }
 
+    setIsSubmitting(false);
     setSubmitted(true);
   };
 
