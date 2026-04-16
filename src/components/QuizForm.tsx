@@ -6,6 +6,8 @@ interface QuizFormProps {
   origem: string;
 }
 
+const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyP-QbHP8R7abyDzqHiG3g-k8YmJhRrWk9rDeCpxEsPwROi82c5P1OfIzPO0paQa6Xo4Q/exec";
+
 const STEPS = [
   {
     question: "Hoje, o que mais gera faturamento na sua farmácia?",
@@ -91,21 +93,52 @@ const QuizForm = ({ origem }: QuizFormProps) => {
     return e;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const e = validateContact();
     if (Object.keys(e).length > 0) {
       setErrors(e);
       return;
     }
     setErrors({});
+
     const payload = {
-      ...answers,
-      location,
-      contact,
+      nomeCompleto: contact.nome,
+      email: contact.email,
+      telefone: contact.whatsapp,
+      documento: contact.cnpj,
+      tipoDocumento: "cnpj",
+      estado: location.estado,
+      cidade: location.cidade,
+      faturamento: answers[0] || "",
+      desempenho: answers[1] || "",
+      produtos: answers[2] || [],
+      mediaFaturamento: answers[3] || "",
       origem_formulario: origem,
     };
-    console.log("Lead capturado:", payload);
-    setSubmitted(true);
+
+    try {
+      const response = await fetch(APP_SCRIPT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao enviar lead: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      if (result.status !== "sucesso") {
+        throw new Error(result.mensagem || "Falha ao enviar lead");
+      }
+
+      setSubmitted(true);
+    } catch (error) {
+      console.error("Erro no envio do formulário", error);
+      setErrors({ submit: String(error) });
+    }
   };
 
   if (submitted) {
@@ -297,6 +330,9 @@ const QuizForm = ({ origem }: QuizFormProps) => {
                 >
                   Quero receber minhas condições no WhatsApp
                 </button>
+                {errors.submit && (
+                  <p className="text-destructive text-xs mt-2">{errors.submit}</p>
+                )}
                 <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
                   <span>✓ Atendimento rápido</span>
                   <span>✓ Sem compromisso</span>
