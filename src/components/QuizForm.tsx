@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import InputMask from "react-input-mask";
 
@@ -47,22 +47,26 @@ const QuizForm = ({ origem }: QuizFormProps) => {
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [multiSelected, setMultiSelected] = useState<string[]>([]);
   const [contact, setContact] = useState({ nome: "", whatsapp: "", email: "", cnpj: "" });
-  const [location, setLocation] = useState({ estado: "", cidade: "" });
+  const [endereco, setEndereco] = useState({ estado: "", cidade: "" });
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const advancingRef = useRef(false);
 
   const totalSteps = STEPS.length;
   const progress = ((step + 1) / totalSteps) * 100;
 
-  const goNext = useCallback(() => {
-    if (step < totalSteps - 1) setStep((s) => s + 1);
-  }, [step, totalSteps]);
+  const goNext = () => setStep((s) => (s < totalSteps - 1 ? s + 1 : s));
 
   const handleSingle = (option: string) => {
+    if (advancingRef.current) return;
+    advancingRef.current = true;
     setAnswers((a) => ({ ...a, [step]: option }));
-    setTimeout(goNext, 300);
+    setTimeout(() => {
+      setStep((s) => (s < totalSteps - 1 ? s + 1 : s));
+      advancingRef.current = false;
+    }, 300);
   };
 
   const handleMultiToggle = (option: string) => {
@@ -78,12 +82,16 @@ const QuizForm = ({ origem }: QuizFormProps) => {
   };
 
   const handleLocationNext = () => {
-    if (!location.estado || !location.cidade) {
-      setErrors({ estado: !location.estado ? "Selecione o estado" : "", cidade: !location.cidade ? "Informe a cidade" : "" });
+    const cidadeTrimmed = endereco.cidade.trim();
+    if (!endereco.estado || !cidadeTrimmed) {
+      setErrors({
+        estado: !endereco.estado ? "Selecione o estado" : "",
+        cidade: !cidadeTrimmed ? "Informe a cidade" : "",
+      });
       return;
     }
     setErrors({});
-    setAnswers((a) => ({ ...a, [step]: `${location.estado} - ${location.cidade}` }));
+    setAnswers((a) => ({ ...a, [step]: `${endereco.estado} - ${cidadeTrimmed}` }));
     goNext();
   };
 
@@ -108,13 +116,13 @@ const QuizForm = ({ origem }: QuizFormProps) => {
 
     const params = new URLSearchParams(window.location.search);
     const payload = {
-      nomeCompleto: contact.nome,
-      email: contact.email,
+      nomeCompleto: contact.nome.trim(),
+      email: contact.email.trim(),
       telefone: contact.whatsapp,
       documento: contact.cnpj.replace(/\D/g, ""),
       tipoDocumento: "cnpj",
-      estado: location.estado,
-      cidade: location.cidade,
+      estado: endereco.estado,
+      cidade: endereco.cidade.trim(),
       utm_source: params.get("utm_source") || "",
       utm_medium: params.get("utm_medium") || "",
       utm_campaign: params.get("utm_campaign") || "",
@@ -160,7 +168,6 @@ const QuizForm = ({ origem }: QuizFormProps) => {
 
   return (
     <div className="bg-card rounded-lg shadow-lg border border-border overflow-hidden">
-      {/* Progress */}
       <div className="h-2 bg-muted">
         <motion.div
           className="h-full bg-accent rounded-r-full"
@@ -240,8 +247,8 @@ const QuizForm = ({ origem }: QuizFormProps) => {
               <div className="space-y-4">
                 <div>
                   <select
-                    value={location.estado}
-                    onChange={(e) => setLocation((l) => ({ ...l, estado: e.target.value }))}
+                    value={endereco.estado}
+                    onChange={(e) => setEndereco((l) => ({ ...l, estado: e.target.value }))}
                     className="w-full p-3.5 rounded-lg border-2 border-border bg-background text-foreground text-sm focus:border-primary focus:outline-none"
                   >
                     <option value="">Selecione o estado</option>
@@ -254,8 +261,8 @@ const QuizForm = ({ origem }: QuizFormProps) => {
                   <input
                     type="text"
                     placeholder="Sua cidade"
-                    value={location.cidade}
-                    onChange={(e) => setLocation((l) => ({ ...l, cidade: e.target.value }))}
+                    value={endereco.cidade}
+                    onChange={(e) => setEndereco((l) => ({ ...l, cidade: e.target.value }))}
                     className="w-full p-3.5 rounded-lg border-2 border-border bg-background text-foreground text-sm focus:border-primary focus:outline-none"
                   />
                   {errors.cidade && <p className="text-destructive text-xs mt-1">{errors.cidade}</p>}
