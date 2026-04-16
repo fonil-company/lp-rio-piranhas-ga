@@ -1,4 +1,10 @@
 import { useState, useCallback } from "react";
+
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+  }
+}
 import { motion, AnimatePresence } from "framer-motion";
 import InputMask from "react-input-mask";
 
@@ -135,6 +141,10 @@ const QuizForm = ({ origem }: QuizFormProps) => {
       }
 
       setSubmitted(true);
+
+      if (typeof window.gtag === "function") {
+        window.gtag("event", "conversion", { send_to: "AW-17617048942/1PJBCMPPxp0cEO6qu9BB" });
+      }
     } catch (error) {
       console.error("Erro no envio do formulário", error);
       setErrors({ submit: String(error) });
