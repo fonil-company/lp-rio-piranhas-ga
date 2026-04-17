@@ -95,7 +95,7 @@ const SocialProof = () => {
 
   return (
     <Section className="bg-section-alt">
-      <SectionTitle sub="Substitua as 4 imagens em src/assets para usar as fotos que você quiser.">
+      <SectionTitle>
         Empresas do Maranhão e Piauí já compram direto da distribuidora
       </SectionTitle>
 
