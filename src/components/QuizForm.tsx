@@ -126,7 +126,7 @@ const QuizForm = ({ origem }: QuizFormProps) => {
       const response = await fetch(APP_SCRIPT_URL, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "text/plain",
         },
         body: JSON.stringify(payload),
       });
