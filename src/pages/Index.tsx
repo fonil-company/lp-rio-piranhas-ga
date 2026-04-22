@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { DollarSign, Truck, Handshake, MessageCircle } from "lucide-react";
 import QuizForm from "@/components/QuizForm";
 import heroImg from "@/assets/hero-warehouse.jpg";
+import image1 from "@/assets/1.png";
+import image2 from "@/assets/2.png";
+import image3 from "@/assets/3.png";
+import image4 from "@/assets/4.png";
+import solutionImageSrc from "@/assets/funcionaria.png";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -71,10 +76,10 @@ const Hero = () => (
 
 /* ── DOBRA 2 — CARROSSEL DE IMAGENS ───────────────── */
 const socialProofImages = [
-  "/src/assets/1.png",
-  "/src/assets/2.png",
-  "/src/assets/3.png",
-  "/src/assets/4.png",
+  image1,
+  image2,
+  image3,
+  image4,
 ];
 
 const SocialProof = () => {
@@ -90,7 +95,7 @@ const SocialProof = () => {
 
   return (
     <Section className="bg-section-alt">
-      <SectionTitle sub="Substitua as 4 imagens na pasta public para usar as fotos que você quiser.">
+      <SectionTitle>
         Empresas do Maranhão e Piauí já compram direto da distribuidora
       </SectionTitle>
 
@@ -175,7 +180,7 @@ const BeliefBreak = () => (
 );
 
 /* ── DOBRA 4 — SOLUÇÃO ────────────────────────────── */
-const solutionImage = "/src/assets/funcionaria.png";
+const solutionImage = solutionImageSrc;
 
 const solutionBullets = [
   {
@@ -284,35 +289,54 @@ const Conditions = () => (
 );
 
 /* ── DOBRA 6 — VSL ────────────────────────────────── */
-const VSL = () => (
-  <Section className="bg-section-alt">
-    <div className="grid lg:grid-cols-2 gap-10 items-center max-w-5xl mx-auto">
-      <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
-        <div className="aspect-video bg-foreground/5 rounded-lg flex items-center justify-center border border-border overflow-hidden">
-          <div className="text-center p-6">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
-              <svg className="w-8 h-8 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            </div>
-            <p className="text-muted-foreground text-sm">Vídeo explicativo</p>
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      "vturb-smartplayer": React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & { id?: string }, HTMLElement>;
+    }
+  }
+}
+
+const VSL = () => {
+  useEffect(() => {
+    const scriptId = "converteai-player-script";
+    if (document.getElementById(scriptId)) return;
+
+    const s = document.createElement("script");
+    s.id = scriptId;
+    s.src = "https://scripts.converteai.net/0b256e8c-1ea0-49a1-a6c2-4aa9d6840568/players/69de754aedea69ec7aa08174/v4/player.js";
+    s.async = true;
+    document.head.appendChild(s);
+  }, []);
+
+  return (
+    <Section className="bg-section-alt">
+      <div className="grid lg:grid-cols-2 gap-10 items-center max-w-5xl mx-auto">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+          <div className="aspect-video bg-foreground/5 rounded-lg border border-border overflow-hidden">
+            <vturb-smartplayer
+              id="vid-69de754aedea69ec7aa08174"
+              style={{ display: "block", margin: "0 auto", width: "100%" }}
+            />
           </div>
-        </div>
-      </motion.div>
-      <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} variants={fadeUp}>
-        <h2 className="text-2xl md:text-3xl font-extrabold text-foreground mb-4">
-          Entenda como funciona a compra direta
-        </h2>
-        <p className="text-muted-foreground text-base leading-relaxed mb-6">
-          Neste vídeo rápido, mostramos como você pode fazer seu primeiro pedido,
-          quais marcas estão disponíveis e como o frete grátis funciona na prática.
-        </p>
-        <a href="#formulario-final" className="inline-flex items-center gap-2 bg-cta text-cta-foreground px-6 py-3 rounded-lg font-bold text-sm hover:brightness-110 transition-all">
-          Preencha o formulário abaixo
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/></svg>
-        </a>
-      </motion.div>
-    </div>
-  </Section>
-);
+        </motion.div>
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} variants={fadeUp}>
+          <h2 className="text-2xl md:text-3xl font-extrabold text-foreground mb-4">
+            Entenda como funciona a compra direta
+          </h2>
+          <p className="text-muted-foreground text-base leading-relaxed mb-6">
+            Neste vídeo rápido, mostramos como você pode fazer seu primeiro pedido,
+            quais marcas estão disponíveis e como o frete grátis funciona na prática.
+          </p>
+          <a href="#formulario-final" className="inline-flex items-center gap-2 bg-cta text-cta-foreground px-6 py-3 rounded-lg font-bold text-sm hover:brightness-110 transition-all">
+            Preencha o formulário abaixo
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/></svg>
+          </a>
+        </motion.div>
+      </div>
+    </Section>
+  );
+};
 
 /* ── DOBRA 7 — FORMULÁRIO REPETIDO ────────────────── */
 const FormRepeat = () => (
@@ -371,7 +395,7 @@ const Footer = () => (
 const Index = () => (
   <>
     <Hero />
-    <SocialProof /> 
+    <SocialProof />
     <BeliefBreak />
     <Solution />
     <Conditions />

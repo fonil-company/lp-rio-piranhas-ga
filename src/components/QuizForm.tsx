@@ -2,6 +2,12 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import InputMask from "react-input-mask";
 
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
 const APPS_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbyP-QbHP8R7abyDzqHiG3g-k8YmJhRrWk9rDeCpxEsPwROi82c5P1OfIzPO0paQa6Xo4Q/exec";
 
@@ -132,6 +138,7 @@ const QuizForm = ({ origem }: QuizFormProps) => {
       desempenho: (answers[1] as string) || "",
       produtos: (answers[2] as string[]) || [],
       mediaFaturamento: (answers[3] as string) || "",
+      origem_formulario: origem,
     };
 
     try {
@@ -145,6 +152,8 @@ const QuizForm = ({ origem }: QuizFormProps) => {
       setIsSubmitting(false);
       return;
     }
+
+    window.gtag?.("event", "conversion", { send_to: "AW-17617048942/1PJBCMPPxp0cEO6qu9BB" });
 
     setIsSubmitting(false);
     setSubmitted(true);
